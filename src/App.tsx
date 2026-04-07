@@ -129,16 +129,44 @@ const playSound = (type: 'correct' | 'wrong') => {
 };
 
 const speakText = (text: string) => {
-  if ('speechSynthesis' in window) {
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
-    
-    const utterance = new SpeechSynthesisUtterance(text);
+  if (!('speechSynthesis' in window)) return;
+  
+  // Stop any current speech
+  window.speechSynthesis.cancel();
+  
+  // Prepare text for better speech (especially for math)
+  let spokenText = text;
+  spokenText = spokenText.replace(/\+/g, ' cộng ');
+  spokenText = spokenText.replace(/-/g, ' trừ ');
+  spokenText = spokenText.replace(/=/g, ' bằng ');
+  spokenText = spokenText.replace(/\?/g, ' mấy ');
+  spokenText = spokenText.replace(/>/g, ' lớn hơn ');
+  spokenText = spokenText.replace(/</g, ' bé hơn ');
+
+  // Small delay to ensure cancel has finished
+  setTimeout(() => {
+    const utterance = new SpeechSynthesisUtterance(spokenText);
     utterance.lang = 'vi-VN';
-    utterance.rate = 0.9; // Slightly slower for kids
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const viVoice = voices.find(v => v.lang.toLowerCase().includes('vi'));
+    if (viVoice) {
+      utterance.voice = viVoice;
+    }
+
     window.speechSynthesis.speak(utterance);
-  }
+  }, 100);
 };
+
+// Initial voice load for some browsers
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  }
+}
 
 // Tracing Canvas Component with Verification
 const TracingCanvas = ({ letter, onComplete, onFail }: { letter: string, onComplete: () => void, onFail: () => void }) => {
@@ -496,24 +524,28 @@ export default function App() {
     };
   }, []);
 
+  const generateQuestionForMode = useCallback((selectedMode: GameMode): Question | null => {
+    if (selectedMode === 'math') return generateMath();
+    if (selectedMode === 'numbers') return generateNumbers();
+    if (selectedMode === 'pattern') return generatePattern();
+    if (selectedMode === 'sequence') return generateSequence();
+    if (selectedMode === 'comparison') return generateComparison();
+    if (selectedMode === 'missing_number') return generateMissingNumber();
+    if (selectedMode === 'letter_recognition') return generateLetterRecognition();
+    return null;
+  }, [generateMath, generateNumbers, generatePattern, generateSequence, generateComparison, generateMissingNumber, generateLetterRecognition]);
+
   const nextQuestion = useCallback(() => {
     setFeedback(null);
     setTimeLeft(30);
-    let newQuestion: Question | null = null;
-    if (mode === 'math') newQuestion = generateMath();
-    else if (mode === 'numbers') newQuestion = generateNumbers();
-    else if (mode === 'pattern') newQuestion = generatePattern();
-    else if (mode === 'sequence') newQuestion = generateSequence();
-    else if (mode === 'comparison') newQuestion = generateComparison();
-    else if (mode === 'missing_number') newQuestion = generateMissingNumber();
-    else if (mode === 'letter_recognition') newQuestion = generateLetterRecognition();
+    const newQuestion = generateQuestionForMode(mode);
     
     if (newQuestion) {
       setQuestion(newQuestion);
       speakText(newQuestion.text);
     }
     // In letters mode, we don't auto-next, Voi picks or we stay
-  }, [mode, generateMath, generateSequence, generateComparison, generateMissingNumber, generateLetterRecognition]);
+  }, [mode, generateQuestionForMode]);
 
   const startGame = (selectedMode: GameMode) => {
     setMode(selectedMode);
@@ -524,15 +556,23 @@ export default function App() {
     setFeedback(null);
     setTimeLeft(30);
     setQuestion(null);
+    
     if (selectedMode === 'letters') {
       setCurrentLetter('A');
       setShowLetterPicker(true);
       speakText("Voi muốn tập viết chữ nào?");
+    } else {
+      const firstQuestion = generateQuestionForMode(selectedMode);
+      if (firstQuestion) {
+        setQuestion(firstQuestion);
+        speakText(firstQuestion.text);
+      }
     }
   };
 
   useEffect(() => {
     if (gameState === 'playing' && !question && mode !== 'letters') {
+      // This is a fallback, but startGame should handle the first one
       nextQuestion();
     }
   }, [gameState, question, mode, nextQuestion]);
@@ -557,13 +597,15 @@ export default function App() {
       setFeedback('correct');
       setScore(prev => prev + 1);
       playSound('correct');
+      speakText("Đúng rồi!");
       confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-      setTimeout(nextQuestion, 1500);
+      setTimeout(nextQuestion, 2000);
     } else {
       setFeedback('wrong');
       setWrongCount(prev => prev + 1);
       playSound('wrong');
-      setTimeout(() => setFeedback(null), 1000);
+      speakText("Chưa đúng rồi!");
+      setTimeout(() => setFeedback(null), 1500);
     }
   };
 
@@ -572,18 +614,20 @@ export default function App() {
     setScore(prev => prev + 1);
     setFeedback('correct');
     playSound('correct');
+    speakText("Giỏi quá!");
     confetti({ particleCount: 100, spread: 50, origin: { y: 0.8 } });
     setTimeout(() => {
       setFeedback(null);
       setShowLetterPicker(true);
-      speakText("Voi muốn tập viết chữ nào?");
-    }, 1500);
+      speakText("Voi muốn tập viết chữ nào tiếp theo?");
+    }, 2000);
   };
 
   const handleTracingFail = () => {
     setFeedback('wrong');
     setWrongCount(prev => prev + 1);
     playSound('wrong');
+    speakText("Thử lại nhé!");
     setTimeout(() => setFeedback(null), 1500);
   };
 
@@ -1049,7 +1093,10 @@ export default function App() {
                   onClick={() => question && speakText(question.text)}
                   className="w-48 h-48 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center shadow-lg border-8 border-amber-200 mb-6"
                 >
-                  <Volume2 size={80} />
+                  <div className="flex flex-col items-center">
+                    <Volume2 size={80} />
+                    <span className="text-sm font-bold mt-2">Bấm để nghe</span>
+                  </div>
                 </motion.button>
                 <h3 className="text-3xl font-bold text-gray-600">Nghe và chọn chữ nhé!</h3>
               </div>
