@@ -190,7 +190,7 @@ const TracingCanvas = ({ letter, onComplete, onFail }: { letter: string, onCompl
 
     // Draw guide on BOTH (one for display, one for reference)
     [ctx, userCtx].forEach(c => {
-      c.font = 'bold 320px "Inter", sans-serif';
+      c.font = 'bold 240px "Inter", sans-serif';
       c.textAlign = 'center';
       c.textBaseline = 'middle';
       
@@ -263,11 +263,16 @@ const TracingCanvas = ({ letter, onComplete, onFail }: { letter: string, onCompl
     const tempCtx = tempCanvas.getContext('2d');
     if (!tempCtx) return;
 
-    tempCtx.font = 'bold 320px "Inter", sans-serif';
+    tempCtx.font = 'bold 240px "Inter", sans-serif';
     tempCtx.textAlign = 'center';
     tempCtx.textBaseline = 'middle';
     tempCtx.fillStyle = 'black';
     tempCtx.fillText(letter, tempCanvas.width / 2, tempCanvas.height / 2);
+
+    // Also draw a stroke on the guide to make the "hit area" a bit wider
+    tempCtx.strokeStyle = 'black';
+    tempCtx.lineWidth = 20;
+    tempCtx.strokeText(letter, tempCanvas.width / 2, tempCanvas.height / 2);
 
     const guideData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
     const userData = ctx.getImageData(0, 0, userCanvas.width, userCanvas.height).data;
@@ -278,7 +283,14 @@ const TracingCanvas = ({ letter, onComplete, onFail }: { letter: string, onCompl
 
     for (let i = 0; i < guideData.length; i += 4) {
       const isGuide = guideData[i + 3] > 0;
-      const isUser = userData[i] === 236 && userData[i + 1] === 72 && userData[i + 2] === 153; // #ec4899
+      // Check for pinkish pixels (user drawing) - more lenient than exact match
+      const r = userData[i];
+      const g = userData[i + 1];
+      const b = userData[i + 2];
+      const a = userData[i + 3];
+      
+      // User color is #ec4899 (236, 72, 153)
+      const isUser = a > 50 && r > 200 && g < 100 && b > 120;
 
       if (isGuide) guidePixels++;
       if (isGuide && isUser) coveredPixels++;
@@ -288,8 +300,8 @@ const TracingCanvas = ({ letter, onComplete, onFail }: { letter: string, onCompl
     const coverage = coveredPixels / guidePixels;
     const accuracy = coveredPixels / (coveredPixels + outsidePixels);
 
-    // If Voi covered 50% of the letter and didn't draw too much outside
-    if (coverage > 0.5 && accuracy > 0.6) {
+    // More lenient thresholds for kids
+    if (coverage > 0.4 && accuracy > 0.3) {
       onComplete();
     } else {
       onFail();
@@ -416,7 +428,7 @@ export default function App() {
       options.add((Math.floor(Math.random() * 10) + 1).toString());
     }
     return {
-      text: `Voi đếm xem có bao nhiêu hình nhé?`,
+      text: `Voi đếm xem có bao nhiêu hình nhé`,
       visual: visuals,
       answer: num.toString(),
       options: Array.from(options).sort(() => Math.random() - 0.5)
@@ -461,7 +473,7 @@ export default function App() {
     }
 
     return {
-      text: `Số liền ${isBefore ? 'trước' : 'sau'} của số ${num} là số nào?`,
+      text: `Số liền ${isBefore ? 'trước' : 'sau'} của số ${num} là số nào`,
       answer: ans.toString(),
       options: Array.from(options).sort(() => Math.random() - 0.5)
     };
@@ -560,7 +572,7 @@ export default function App() {
     if (selectedMode === 'letters') {
       setCurrentLetter('A');
       setShowLetterPicker(true);
-      speakText("Voi muốn tập viết chữ nào?");
+      speakText("Voi muốn tập viết chữ nào");
     } else {
       const firstQuestion = generateQuestionForMode(selectedMode);
       if (firstQuestion) {
@@ -619,7 +631,7 @@ export default function App() {
     setTimeout(() => {
       setFeedback(null);
       setShowLetterPicker(true);
-      speakText("Voi muốn tập viết chữ nào tiếp theo?");
+      speakText("Voi muốn tập viết chữ nào tiếp theo");
     }, 2000);
   };
 
@@ -908,10 +920,10 @@ export default function App() {
               <div className="w-full">
                 <h3 
                   className="text-2xl font-bold text-purple-600 mb-6 cursor-pointer hover:opacity-80 flex items-center justify-center gap-2"
-                  onClick={() => speakText("Voi muốn tập viết chữ nào?")}
+                  onClick={() => speakText("Voi muốn tập viết chữ nào")}
                 >
                   <Volume2 size={24} />
-                  Voi muốn tập viết chữ nào?
+                  Voi muốn tập viết chữ nào
                 </h3>
                 <div className="grid grid-cols-5 md:grid-cols-7 gap-3 max-h-[400px] overflow-y-auto p-2">
                   {LETTER_LIST.map(l => (
@@ -942,7 +954,7 @@ export default function App() {
                   <button 
                     onClick={() => {
                       setShowLetterPicker(true);
-                      speakText("Voi muốn tập viết chữ nào?");
+                      speakText("Voi muốn tập viết chữ nào");
                     }}
                     className="text-sm font-bold text-blue-500 hover:underline"
                   >
@@ -1176,7 +1188,7 @@ export default function App() {
         <div className="text-5xl font-black text-blue-600">{score} Điểm</div>
         <div className="text-lg font-bold text-gray-400">Đã làm: {totalCount} | Sai: {wrongCount}</div>
       </div>
-      <p className="text-xl text-gray-600 mb-8">Voi đã làm rất tốt! Muốn chơi lại không?</p>
+      <p className="text-xl text-gray-600 mb-8">Voi đã làm rất tốt! Muốn chơi lại không</p>
       
       <div className="flex flex-col gap-4">
         <button 
