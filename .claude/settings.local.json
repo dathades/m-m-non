@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem \"D:\\\\Project demo\\\\m-m-non-main\\\\src\" -Recurse | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\Project demo\\\\m-m-non-main\\\\\", \"\"\\) })",
+      "PowerShell(git *)",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(git init *)",
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "PowerShell(New-Item *)",
+      "Bash(sed -n '201,349p' docs/superpowers/plans/2026-06-10-refactor-components-name-screen.md)",
+      "Read(//tmp/**)",
+      "Bash(sed -n '27,53p' docs/superpowers/plans/2026-06-10-refactor-components-name-screen.md)",
+      "PowerShell(npm run *)",
+      "PowerShell(git show *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(echo \"lint exit: $?\")",
+      "Bash(echo \"exit=$?\")",
+      "Bash(sed -n '656,847p' src/App.tsx)",
+      "Bash(sed -i -e 's/startGame\\(/onStart\\(/g' -e 's/setMathRange\\(r\\)/onSettingsChange\\({ mathRange: r }\\)/g' -e 's/setMathOperator\\(op\\)/onSettingsChange\\({ mathOperator: op }\\)/g' -e 's/setSequenceRange\\(r\\)/onSettingsChange\\({ sequenceRange: r }\\)/g' -e 's/setComparisonRange\\(r\\)/onSettingsChange\\({ comparisonRange: r }\\)/g' -e 's/setMissingNumberRange\\(r\\)/onSettingsChange\\({ missingNumberRange: r }\\)/g' -e 's/\\\\bmathRange ===/settings.mathRange ===/g' -e 's/\\\\bmathOperator ===/settings.mathOperator ===/g' -e 's/\\\\bsequenceRange ===/settings.sequenceRange ===/g' -e 's/\\\\bcomparisonRange ===/settings.comparisonRange ===/g' -e 's/\\\\bmissingNumberRange ===/settings.missingNumberRange ===/g' /tmp/orig.txt)",
+      "Bash(sed -n '41,231p' src/components/StartScreen.tsx)",
+      "Bash(sed -n '41,232p' src/components/StartScreen.tsx)",
+      "Bash(awk '/## Task 12/,/## Task 15/' \"docs/superpowers/plans/2026-06-10-refactor-components-name-screen.md\")",
+      "Bash(sed -n '646,660p' src/App.tsx)",
+      "Bash(sed -n '1179,1212p' src/App.tsx)",
+      "Bash(sed -n '1299,1617p' docs/superpowers/plans/2026-06-10-refactor-components-name-screen.md)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(Select-String *)",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 15; Write-Output \"Status: $\\($r.StatusCode\\)\"; Write-Output $r.Content.Substring\\(0, [Math]::Min\\(500, $r.Content.Length\\)\\))",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:3000/src/App.tsx\" -UseBasicParsing -TimeoutSec 15; Write-Output \"App.tsx transform status: $\\($r.StatusCode\\)\"; $r2 = Invoke-WebRequest -Uri \"http://localhost:3000/src/components/NameEntryScreen.tsx\" -UseBasicParsing -TimeoutSec 15; Write-Output \"NameEntryScreen transform status: $\\($r2.StatusCode\\)\")",
+      "PowerShell(echo $env:TEMP)"
+    ]
+  }
+}
