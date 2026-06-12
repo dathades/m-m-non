@@ -8,6 +8,7 @@ import {
   RotateCcw,
   Settings2,
   Trophy,
+  Type,
   Volume2
 } from 'lucide-react';
 import type { GameMode, GameSettings, MathOperator } from '../types.ts';
@@ -228,6 +229,17 @@ export default function StartScreen({ name, settings, onSettingsChange, onStart,
           </div>
           <span className="text-2xl font-bold text-amber-700">Nhận Biết Chữ</span>
           <span className="text-sm text-amber-600 mt-2">Nghe và chọn chữ</span>
+        </button>
+
+        <button
+          onClick={() => onStart('first_letter')}
+          className="group flex flex-col items-center p-6 bg-teal-100 hover:bg-teal-200 rounded-2xl transition-all border-b-8 border-teal-300 active:border-b-0 active:translate-y-2"
+        >
+          <div className="bg-teal-400 p-4 rounded-full text-white mb-4 group-hover:scale-110 transition-transform">
+            <Type size={48} />
+          </div>
+          <span className="text-2xl font-bold text-teal-700">Chữ Đầu Tiên</span>
+          <span className="text-sm text-teal-600 mt-2">Chọn chữ cái đầu của tiếng</span>
         </button>
       </div>
     </motion.div>

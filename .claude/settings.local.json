@@ -77,7 +77,18 @@
       "PowerShell(npx tsx -e \"import {getStrokes} from './src/lib/letterStrokes.ts'; const L=['0','1','2','3','4','5','6','7','8','9','A','Ă','Â','B','C','D','Đ','E','Ê','G','H','I','K','L','M','N','O','Ô','Ơ','P','Q','R','S','T','U','Ư','V','X','Y']; const miss=L.filter\\(c=>getStrokes\\(c\\).length===0\\); console.log\\('count', L.length, 'missing', JSON.stringify\\(miss\\)\\);\")",
       "PowerShell(node scripts/genLetterStrokes.mjs; git status --porcelain src/lib/letterStrokes.ts)",
       "PowerShell(git show 1c00a25 --stat --oneline; \"---\"; git diff master..HEAD -- package.json)",
-      "PowerShell(npx tsx scripts/tracingScore.test.ts 2>&1 | Out-String; \"EXIT=$LASTEXITCODE \\(mong đợi FAIL ở test 6\\)\")"
+      "PowerShell(npx tsx scripts/tracingScore.test.ts 2>&1 | Out-String; \"EXIT=$LASTEXITCODE \\(mong đợi FAIL ở test 6\\)\")",
+      "Bash(echo \"EXIT_CODE: $?\")",
+      "PowerShell(npx tsx scripts/syllables.test.ts; Write-Output \"TEST_EXIT=$LASTEXITCODE\")",
+      "PowerShell(npx tsx -e \"import {WORDS,ONSETS,RHYMES,TONES} from './src/lib/syllables.ts'; let bad=[]; for\\(const w of WORDS\\){ if\\(!w.syllable.startsWith\\(w.onset\\)\\) bad.push\\('onset-prefix: '+w.syllable\\); if\\(!ONSETS.includes\\(w.onset\\)\\) bad.push\\('onset not in pool: '+w.onset\\); if\\(!RHYMES.includes\\(w.rhyme\\)\\) bad.push\\('rhyme not in pool: '+w.rhyme\\); if\\(!TONES.some\\(t=>t.tone===w.tone\\)\\) bad.push\\('tone invalid: '+w.tone\\); } const tones=new Set\\(WORDS.map\\(w=>w.tone\\)\\); console.log\\('count='+WORDS.length\\); console.log\\('tones='+[...tones].join\\(','\\)\\); console.log\\('toneCount='+tones.size\\); console.log\\('bad='+JSON.stringify\\(bad\\)\\);\")",
+      "Bash(echo \"TEST_EXIT=$?\")",
+      "Bash(git rm *)",
+      "Bash(echo \"---EXIT:$?---\")",
+      "Bash(echo \"exit:$?\")",
+      "Bash(echo \"ls-exit:$?\")",
+      "Bash(echo \"grep-exit:$?\")",
+      "Bash(echo \"tones-exit:$?\")",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 8; \"Server OK: $\\($r.StatusCode\\)\" } catch { \"Server không phản hồi — cần chạy lại npm run dev\" })"
     ]
   }
 }

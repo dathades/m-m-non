@@ -17,6 +17,7 @@ import {
   generatePattern,
   generateSequence
 } from './lib/questions.ts';
+import { generateFirstLetter } from './lib/syllables.ts';
 import NameEntryScreen from './components/NameEntryScreen.tsx';
 import StartScreen from './components/StartScreen.tsx';
 import EndScreen from './components/EndScreen.tsx';
@@ -30,6 +31,7 @@ import SequenceGame from './components/games/SequenceGame.tsx';
 import ComparisonGame from './components/games/ComparisonGame.tsx';
 import MissingNumberGame from './components/games/MissingNumberGame.tsx';
 import LetterRecognitionGame from './components/games/LetterRecognitionGame.tsx';
+import FirstLetterGame from './components/games/FirstLetterGame.tsx';
 
 const NAME_STORAGE_KEY = 'childName';
 
@@ -97,6 +99,7 @@ export default function App() {
     if (selectedMode === 'comparison') return generateComparison(settings.comparisonRange, childName);
     if (selectedMode === 'missing_number') return generateMissingNumber(settings.missingNumberRange, childName);
     if (selectedMode === 'letter_recognition') return generateLetterRecognition(childName);
+    if (selectedMode === 'first_letter') return generateFirstLetter();
     return null;
   }, [settings, childName]);
 
@@ -237,6 +240,8 @@ export default function App() {
         return <MissingNumberGame question={question!} disabled={disabled} onAnswer={handleAnswer} />;
       case 'letter_recognition':
         return <LetterRecognitionGame question={question!} disabled={disabled} onAnswer={handleAnswer} />;
+      case 'first_letter':
+        return <FirstLetterGame question={question!} disabled={disabled} onAnswer={handleAnswer} />;
       default:
         return null;
     }

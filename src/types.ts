@@ -6,7 +6,8 @@ export type GameMode =
   | 'sequence'
   | 'comparison'
   | 'missing_number'
-  | 'letter_recognition';
+  | 'letter_recognition'
+  | 'first_letter';
 
 export type MathOperator = '+' | '-';
 
