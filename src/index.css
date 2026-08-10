@@ -5,3 +5,7 @@
   25% { transform: translateX(-6px); }
   75% { transform: translateX(6px); }
 }
+
+.font-spell {
+  font-family: 'Tinos', 'Times New Roman', serif;
+}
