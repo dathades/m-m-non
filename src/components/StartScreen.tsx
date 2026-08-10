@@ -7,6 +7,7 @@ import {
   Pencil,
   RotateCcw,
   Settings2,
+  SpellCheck,
   Trophy,
   Type,
   Volume2
@@ -229,6 +230,17 @@ export default function StartScreen({ name, settings, onSettingsChange, onStart,
           </div>
           <span className="text-2xl font-bold text-amber-700">Nhận Biết Chữ</span>
           <span className="text-sm text-amber-600 mt-2">Nghe và chọn chữ</span>
+        </button>
+
+        <button
+          onClick={() => onStart('spelling')}
+          className="group flex flex-col items-center p-6 bg-fuchsia-100 hover:bg-fuchsia-200 rounded-2xl transition-all border-b-8 border-fuchsia-300 active:border-b-0 active:translate-y-2"
+        >
+          <div className="bg-fuchsia-400 p-4 rounded-full text-white mb-4 group-hover:scale-110 transition-transform">
+            <SpellCheck size={48} />
+          </div>
+          <span className="text-2xl font-bold text-fuchsia-700">Đánh Vần</span>
+          <span className="text-sm text-fuchsia-600 mt-2">Ghép âm thành tiếng</span>
         </button>
 
         <button
