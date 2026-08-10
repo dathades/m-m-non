@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { applyTone, chooseOnsetSpelling, toneVowelIndex } from './spelling.ts';
-import { buildCorpus, ONSET_READING } from './spelling.ts';
+import { buildCorpus, ONSET_READING, TONE_LABELS } from './spelling.ts';
 import { VI_SYLLABLES } from './viSyllables.ts';
+import { generateSpellingRound } from './spelling.ts';
 
 describe('toneVowelIndex', () => {
   // Test chi tiết đặt dấu nằm ở applyTone (dùng vần thật có ô/ê/ơ).
@@ -90,6 +91,31 @@ describe('buildCorpus', () => {
     for (const w of corpus) {
       expect(seen.has(w.syllable)).toBe(false);
       seen.add(w.syllable);
+    }
+  });
+});
+
+describe('generateSpellingRound', () => {
+  it('sinh đề hợp lệ 50 lần', () => {
+    for (let n = 0; n < 50; n++) {
+      const r = generateSpellingRound();
+
+      // đáp án đúng khớp
+      expect(r.blend).toBe(r.onset + r.rhyme);
+      expect(r.onsetReading).toBe(ONSET_READING[r.onset]);
+      expect(r.hasTone).toBe(r.tone !== 'không');
+      expect(r.toneLabel).toBe(r.tone === 'không' ? '' : TONE_LABELS[r.tone]);
+
+      const groups = [r.onsetOptions, r.rhymeOptions, r.toneOptions];
+      const correct = [r.onset, r.rhyme, r.tone];
+      groups.forEach((opts, gi) => {
+        expect(opts).toHaveLength(4);
+        // chứa đáp án đúng
+        expect(opts.some((o) => o.value === correct[gi])).toBe(true);
+        // value không trùng
+        const values = opts.map((o) => o.value);
+        expect(new Set(values).size).toBe(4);
+      });
     }
   });
 });

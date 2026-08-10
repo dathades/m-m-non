@@ -154,3 +154,69 @@ export function buildCorpus(): SpellingWord[] {
   _corpus = [...bySyllable.values()];
   return _corpus;
 }
+
+export interface SpellStepOption {
+  display: string; // chữ hiển thị lớn
+  reading: string; // nhãn cách đọc nhỏ
+  value: string;   // giá trị so khớp
+}
+
+export interface SpellingRound {
+  syllable: string;
+  blend: string;
+  onset: string;
+  rhyme: string;
+  tone: Tone;
+  onsetReading: string;
+  toneLabel: string; // '' nếu không dấu
+  hasTone: boolean;
+  onsetOptions: SpellStepOption[];
+  rhymeOptions: SpellStepOption[];
+  toneOptions: SpellStepOption[];
+}
+
+const shuffle = <T>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5);
+
+const pickDistinct = (pool: string[], exclude: string, n: number): string[] =>
+  shuffle(pool.filter((p) => p !== exclude)).slice(0, n);
+
+const toneReading = (t: Tone): string => (t === 'không' ? '' : 'dấu ' + TONE_LABELS[t]);
+
+export function generateSpellingRound(maxRank = 2000): SpellingRound {
+  const corpus = buildCorpus();
+  let pool = corpus.filter((w) => w.freqRank < maxRank);
+  if (pool.length < 10) pool = corpus;
+  const w = pool[Math.floor(Math.random() * pool.length)];
+
+  const onsetOptions = shuffle([w.onset, ...pickDistinct(ONSET_POOL, w.onset, 3)]).map((v) => ({
+    display: v,
+    reading: ONSET_READING[v] ?? v,
+    value: v,
+  }));
+
+  const rhymeOptions = shuffle([w.rhyme, ...pickDistinct(RHYMES, w.rhyme, 3)]).map((v) => ({
+    display: v,
+    reading: v,
+    value: v,
+  }));
+
+  const toneOptions = shuffle([w.tone, ...(pickDistinct(TONES, w.tone, 3) as Tone[])]).map((t) => ({
+    display: TONE_MARKS[t],
+    reading: toneReading(t),
+    value: t,
+  }));
+
+  return {
+    syllable: w.syllable,
+    blend: w.blend,
+    onset: w.onset,
+    rhyme: w.rhyme,
+    tone: w.tone,
+    onsetReading: w.onsetReading,
+    toneLabel: w.tone === 'không' ? '' : TONE_LABELS[w.tone],
+    hasTone: w.tone !== 'không',
+    onsetOptions,
+    rhymeOptions,
+    toneOptions,
+  };
+}
