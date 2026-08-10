@@ -7,7 +7,8 @@ export type GameMode =
   | 'comparison'
   | 'missing_number'
   | 'letter_recognition'
-  | 'first_letter';
+  | 'first_letter'
+  | 'spelling';
 
 export type MathOperator = '+' | '-';
 
