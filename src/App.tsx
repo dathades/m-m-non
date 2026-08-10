@@ -18,6 +18,7 @@ import {
   generateSequence
 } from './lib/questions.ts';
 import { generateFirstLetter } from './lib/syllables.ts';
+import { generateSpellingRound, type SpellingRound } from './lib/spelling.ts';
 import NameEntryScreen from './components/NameEntryScreen.tsx';
 import StartScreen from './components/StartScreen.tsx';
 import EndScreen from './components/EndScreen.tsx';
@@ -32,6 +33,7 @@ import ComparisonGame from './components/games/ComparisonGame.tsx';
 import MissingNumberGame from './components/games/MissingNumberGame.tsx';
 import LetterRecognitionGame from './components/games/LetterRecognitionGame.tsx';
 import FirstLetterGame from './components/games/FirstLetterGame.tsx';
+import SpellingGame from './components/games/SpellingGame.tsx';
 
 const NAME_STORAGE_KEY = 'childName';
 
@@ -63,6 +65,7 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState(30);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const [question, setQuestion] = useState<Question | null>(null);
+  const [spellingRound, setSpellingRound] = useState<SpellingRound | null>(null);
   const [currentLetter, setCurrentLetter] = useState('A');
   const [showLetterPicker, setShowLetterPicker] = useState(false);
   const [settings, setSettings] = useState<GameSettings>({
@@ -83,6 +86,7 @@ export default function App() {
   const resetToHome = () => {
     setGameState('start');
     setQuestion(null);
+    setSpellingRound(null);
     setScore(0);
     setWrongCount(0);
     setTotalCount(0);
@@ -106,13 +110,19 @@ export default function App() {
   const nextQuestion = useCallback(() => {
     setFeedback(null);
     setTimeLeft(30);
-    const newQuestion = generateQuestionForMode(mode);
 
+    if (mode === 'spelling') {
+      const round = generateSpellingRound();
+      setSpellingRound(round);
+      speakText(round.syllable);
+      return;
+    }
+
+    const newQuestion = generateQuestionForMode(mode);
     if (newQuestion) {
       setQuestion(newQuestion);
       speakText(newQuestion.text);
     }
-    // In letters mode, we don't auto-next
   }, [mode, generateQuestionForMode]);
 
   const startGame = (selectedMode: GameMode) => {
@@ -129,6 +139,10 @@ export default function App() {
       setCurrentLetter('A');
       setShowLetterPicker(true);
       speakText(`${childName} muốn tập viết chữ nào`);
+    } else if (selectedMode === 'spelling') {
+      const round = generateSpellingRound();
+      setSpellingRound(round);
+      speakText(round.syllable);
     } else {
       const firstQuestion = generateQuestionForMode(selectedMode);
       if (firstQuestion) {
@@ -139,7 +153,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (gameState === 'playing' && !question && mode !== 'letters') {
+    if (gameState === 'playing' && !question && mode !== 'letters' && mode !== 'spelling') {
       nextQuestion();
     }
   }, [gameState, question, mode, nextQuestion]);
@@ -209,8 +223,23 @@ export default function App() {
     speakText(`${childName} muốn tập viết chữ nào`);
   };
 
+  const handleSpellingComplete = () => {
+    setTotalCount((prev) => prev + 1);
+    setScore((prev) => prev + 1);
+    setFeedback('correct');
+    playSound('correct');
+    speakText(`${childName} giỏi quá!`);
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    setTimeout(nextQuestion, 2500);
+  };
+
+  const handleSpellingWrong = () => {
+    setWrongCount((prev) => prev + 1);
+    playSound('wrong');
+  };
+
   const renderGameBody = () => {
-    if (!question && mode !== 'letters') return null;
+    if (!question && mode !== 'letters' && mode !== 'spelling') return null;
     const disabled = feedback === 'correct';
 
     switch (mode) {
@@ -242,6 +271,15 @@ export default function App() {
         return <LetterRecognitionGame question={question!} disabled={disabled} onAnswer={handleAnswer} />;
       case 'first_letter':
         return <FirstLetterGame question={question!} disabled={disabled} onAnswer={handleAnswer} />;
+      case 'spelling':
+        return spellingRound ? (
+          <SpellingGame
+            round={spellingRound}
+            disabled={feedback === 'correct'}
+            onComplete={handleSpellingComplete}
+            onWrong={handleSpellingWrong}
+          />
+        ) : null;
       default:
         return null;
     }
@@ -259,7 +297,13 @@ export default function App() {
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={mode === 'letters' ? (showLetterPicker ? 'picker' : currentLetter) : (question?.text ?? '') + (question?.visual?.length || '')}
+          key={
+            mode === 'letters'
+              ? (showLetterPicker ? 'picker' : currentLetter)
+              : mode === 'spelling'
+              ? (spellingRound?.syllable ?? '')
+              : (question?.text ?? '') + (question?.visual?.length || '')
+          }
           initial={{ opacity: 0, scale: 0.9, x: 20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           exit={{ opacity: 0, scale: 1.1, x: -20 }}
