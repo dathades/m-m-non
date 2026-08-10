@@ -88,7 +88,12 @@
       "Bash(echo \"ls-exit:$?\")",
       "Bash(echo \"grep-exit:$?\")",
       "Bash(echo \"tones-exit:$?\")",
-      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 8; \"Server OK: $\\($r.StatusCode\\)\" } catch { \"Server không phản hồi — cần chạy lại npm run dev\" })"
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 8; \"Server OK: $\\($r.StatusCode\\)\" } catch { \"Server không phản hồi — cần chạy lại npm run dev\" })",
+      "Bash(bash scripts/start-server.sh --project-dir \"C:/Users/nguyenquocdat/m-m-non\")",
+      "Bash(node scripts/build-syllables.mjs)",
+      "Bash(npx vitest *)",
+      "Bash(node --input-type=module)",
+      "Bash(del \"src\\\\lib\\\\_review_temp.test.ts\")"
     ]
   }
 }

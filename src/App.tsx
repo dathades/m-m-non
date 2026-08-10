@@ -228,7 +228,6 @@ export default function App() {
     setScore((prev) => prev + 1);
     setFeedback('correct');
     playSound('correct');
-    speakText(`${childName} giỏi quá!`);
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
     setTimeout(nextQuestion, 2500);
   };

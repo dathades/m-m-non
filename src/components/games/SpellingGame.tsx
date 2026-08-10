@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Volume2 } from 'lucide-react';
 import { speakText } from '../../lib/audio.ts';
 import type { SpellingRound, SpellStepOption } from '../../lib/spelling.ts';
@@ -41,9 +41,7 @@ export default function SpellingGame({ round, disabled, onComplete, onWrong }: S
     }
   };
 
-  const spokeChain = useRef(false);
   const finish = () => {
-    spokeChain.current = false;
     // đọc cả chuỗi rồi báo hoàn thành
     const seq = round.hasTone
       ? [round.onsetReading, round.rhyme, round.blend, round.toneLabel, round.syllable]
