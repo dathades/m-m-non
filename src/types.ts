@@ -9,7 +9,8 @@ export type GameMode =
   | 'letter_recognition'
   | 'first_letter'
   | 'spelling'
-  | 'fractions';
+  | 'fractions'
+  | 'measurement';
 
 export type MathOperator = '+' | '-';
 

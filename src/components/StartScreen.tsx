@@ -3,6 +3,7 @@ import {
   BookOpen,
   CheckCircle2,
   Divide,
+  Ruler,
   Gamepad2,
   GraduationCap,
   Hash,
@@ -63,6 +64,16 @@ export default function StartScreen({ name, settings, onSettingsChange, onStart,
             </div>
             <span className="text-2xl font-bold text-violet-700">Phân Số</span>
             <span className="text-sm text-violet-600 mt-2">Toán lớp 4</span>
+          </button>
+          <button
+            onClick={() => onStart('measurement')}
+            className="group flex flex-col items-center p-6 bg-teal-100 hover:bg-teal-200 rounded-2xl transition-all border-b-8 border-teal-300 active:border-b-0 active:translate-y-2"
+          >
+            <div className="bg-teal-400 p-4 rounded-full text-white mb-4 group-hover:scale-110 transition-transform">
+              <Ruler size={48} />
+            </div>
+            <span className="text-2xl font-bold text-teal-700">Đo Lường</span>
+            <span className="text-sm text-teal-600 mt-2">Toán lớp 4</span>
           </button>
         </div>
       )}
