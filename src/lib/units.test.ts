@@ -30,3 +30,12 @@ describe('MEASURES', () => {
     expect(byName('Thời gian').chains).toHaveLength(2);
   });
 });
+
+import { UNIT_SPEECH } from './units.ts';
+describe('UNIT_SPEECH', () => {
+  it('phủ mọi đơn vị trong MEASURES', () => {
+    for (const m of MEASURES) for (const c of m.chains) for (const u of c) {
+      expect(UNIT_SPEECH[u.label]).toBeTruthy();
+    }
+  });
+});

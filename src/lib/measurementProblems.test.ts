@@ -58,3 +58,13 @@ describe('checkMeasurementAnswer', () => {
     expect(checkMeasurementAnswer({ answer: '<' } as any, '>')).toBe(false);
   });
 });
+
+import { verbalizeMeasurementProblem } from './measurementProblems.ts';
+describe('verbalizeMeasurementProblem', () => {
+  it('đọc đơn vị rõ + đúng mẫu', () => {
+    expect(verbalizeMeasurementProblem({ answerType: 'number', parts: '5 yến', toUnit: 'kg' } as any)).toBe('5 yến bằng bao nhiêu ki lô gam');
+    expect(verbalizeMeasurementProblem({ answerType: 'number', parts: '3 m²', toUnit: 'dm²' } as any)).toBe('3 mét vuông bằng bao nhiêu đề xi mét vuông');
+    expect(verbalizeMeasurementProblem({ answerType: 'number', parts: '2 tấn 5 tạ', toUnit: 'kg' } as any)).toBe('2 tấn 5 tạ bằng bao nhiêu ki lô gam');
+    expect(verbalizeMeasurementProblem({ answerType: 'choice3', left: '5 tạ', right: '6 yến' } as any)).toBe('So sánh 5 tạ và 6 yến');
+  });
+});

@@ -1,4 +1,4 @@
-import { MEASURES, type Chain, type Unit } from './units.ts';
+import { MEASURES, UNIT_SPEECH, type Chain, type Unit } from './units.ts';
 
 export type MeasureSkill = 'convert' | 'compare' | 'compound';
 export interface MeasurementProblem {
@@ -74,4 +74,11 @@ export function generateMeasurementProblem(skill: MeasureSkill | 'mix'): Measure
 
 export function checkMeasurementAnswer(p: MeasurementProblem, input: number | string): boolean {
   return input === p.answer;
+}
+
+const sayQty = (s: string) => s.replace(/(\d+)\s+(\S+)/g, (_, n, unit) => `${n} ${UNIT_SPEECH[unit] ?? unit}`);
+
+export function verbalizeMeasurementProblem(p: MeasurementProblem): string {
+  if (p.answerType === 'choice3') return `So sánh ${sayQty(p.left ?? '')} và ${sayQty(p.right ?? '')}`;
+  return `${sayQty(p.parts ?? '')} bằng bao nhiêu ${UNIT_SPEECH[p.toUnit ?? ''] ?? p.toUnit}`;
 }

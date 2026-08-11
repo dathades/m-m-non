@@ -60,3 +60,20 @@ describe('đáp án addsub đúng giá trị', () => {
     }
   });
 });
+
+import { verbalizeFractionProblem } from './fractionProblems.ts';
+describe('verbalizeFractionProblem', () => {
+  const f = (num: number, den: number) => ({ num, den });
+  it('đọc từng dạng', () => {
+    expect(verbalizeFractionProblem({ skill: 'recognize', operands: [] } as any)).toBe('Phân số nào chỉ phần đã tô?');
+    expect(verbalizeFractionProblem({ skill: 'simplify', operands: [f(2, 4)] } as any)).toBe('Rút gọn phân số, 2 phần 4');
+    expect(verbalizeFractionProblem({ skill: 'compare', operands: [f(1, 2), f(1, 3)] } as any)).toBe('So sánh 1 phần 2 và 1 phần 3');
+    expect(verbalizeFractionProblem({ skill: 'addsub', op: '+', operands: [f(1, 2), f(1, 3)] } as any)).toBe('1 phần 2 cộng 1 phần 3 bằng bao nhiêu');
+    expect(verbalizeFractionProblem({ skill: 'muldiv', op: '×', operands: [f(2, 3), f(3, 4)] } as any)).toBe('2 phần 3 nhân 3 phần 4 bằng bao nhiêu');
+    expect(verbalizeFractionProblem({ skill: 'fracof', operands: [f(2, 3)], ofNum: 12 } as any)).toBe('2 phần 3 của 12 bằng bao nhiêu');
+  });
+  it('không chứa ký hiệu toán', () => {
+    const s = verbalizeFractionProblem({ skill: 'addsub', op: '−', operands: [f(2, 3), f(1, 6)] } as any);
+    expect(s).not.toMatch(/[/+\-−×÷=?]/);
+  });
+});

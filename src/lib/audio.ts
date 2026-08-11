@@ -46,3 +46,9 @@ if ('speechSynthesis' in window) {
     window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
   }
 }
+
+export const SAY = {
+  correct: 'Đúng rồi! Tiếp tục nào!',
+  retry: 'Chưa đúng, thử lại nhé!',
+  timeout: 'Hết giờ rồi!',
+};

@@ -62,6 +62,22 @@ export function generateFractionProblem(skill: FractionSkill | 'mix'): FractionP
   return { skill: 'fracof', prompt: 'Tìm phân số của một số', operands: [{ num: a, den: b }], ofNum: n, answerType: 'integer', answer: (a * n) / b };
 }
 
+const FRAC_OP_WORD: Record<string, string> = { '+': 'cộng', '−': 'trừ', '×': 'nhân', '÷': 'chia' };
+const sayFrac = (f: Fraction) => `${f.num} phần ${f.den}`;
+
+export function verbalizeFractionProblem(p: FractionProblem): string {
+  const a = p.operands[0], b = p.operands[1];
+  switch (p.skill) {
+    case 'recognize': return 'Phân số nào chỉ phần đã tô?';
+    case 'simplify': return `Rút gọn phân số, ${sayFrac(a)}`;
+    case 'compare': return `So sánh ${sayFrac(a)} và ${sayFrac(b)}`;
+    case 'addsub':
+    case 'muldiv': return `${sayFrac(a)} ${FRAC_OP_WORD[p.op ?? ''] ?? ''} ${sayFrac(b)} bằng bao nhiêu`;
+    case 'fracof': return `${sayFrac(a)} của ${p.ofNum} bằng bao nhiêu`;
+  }
+  return '';
+}
+
 export function checkFractionAnswer(p: FractionProblem, input: Fraction | number | string): boolean {
   if (p.answerType === 'choice' || p.answerType === 'choice3') return input === p.answer;
   if (p.answerType === 'integer') return input === p.answer;

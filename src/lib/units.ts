@@ -20,3 +20,10 @@ export const MEASURES: Measure[] = [
     [{ label: 'năm', base: 1 }, { label: 'thế kỉ', base: 100 }],
   ] },
 ];
+
+export const UNIT_SPEECH: Record<string, string> = {
+  g: 'gam', kg: 'ki lô gam', 'yến': 'yến', 'tạ': 'tạ', 'tấn': 'tấn',
+  mm: 'mi li mét', cm: 'xăng ti mét', dm: 'đề xi mét', m: 'mét', km: 'ki lô mét',
+  'mm²': 'mi li mét vuông', 'cm²': 'xăng ti mét vuông', 'dm²': 'đề xi mét vuông', 'm²': 'mét vuông',
+  'giây': 'giây', 'phút': 'phút', 'giờ': 'giờ', 'ngày': 'ngày', 'năm': 'năm', 'thế kỉ': 'thế kỉ',
+};
