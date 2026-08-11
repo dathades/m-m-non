@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
 import GameHUD from '../GameHUD.tsx';
 import NumberPad from '../NumberPad.tsx';
-import { playSound } from '../../lib/audio.ts';
+import { playSound, speakText, SAY } from '../../lib/audio.ts';
 import {
-  generateMeasurementProblem, checkMeasurementAnswer,
+  generateMeasurementProblem, checkMeasurementAnswer, verbalizeMeasurementProblem,
   type MeasurementProblem, type MeasureSkill,
 } from '../../lib/measurementProblems.ts';
 
@@ -57,10 +57,13 @@ export default function MeasurementGame({ onExit }: MeasurementGameProps) {
       setTotal((n) => n + 1);
       setMsg({ text: 'Hết giờ! ⏰ (tính là sai)', ok: false });
       playSound('wrong');
-      advanceRef.current = window.setTimeout(() => startProblem(skill), 1200);
+      speakText(SAY.timeout);
+      advanceRef.current = window.setTimeout(() => startProblem(skill), 1500);
       return () => { if (advanceRef.current !== null) { clearTimeout(advanceRef.current); advanceRef.current = null; } };
     }
   }, [timeLeft, skill]);
+
+  useEffect(() => { speakText(verbalizeMeasurementProblem(problem)); }, [problem]);
 
   const finishCorrect = () => {
     setLocked(true);
@@ -68,13 +71,15 @@ export default function MeasurementGame({ onExit }: MeasurementGameProps) {
     setTotal((n) => n + 1);
     setMsg({ text: 'Đúng rồi! 🎉', ok: true });
     playSound('correct');
+    speakText(SAY.correct);
     confetti({ particleCount: 90, spread: 60, origin: { y: 0.7 } });
-    advanceRef.current = window.setTimeout(() => startProblem(skill), 850);
+    advanceRef.current = window.setTimeout(() => startProblem(skill), 1800);
   };
 
   const wrongTry = () => {
     setMsg({ text: 'Chưa đúng, thử lại nhé', ok: false });
     playSound('wrong');
+    speakText(SAY.retry);
     setShake(true);
     window.setTimeout(() => setShake(false), 400);
   };
@@ -110,6 +115,15 @@ export default function MeasurementGame({ onExit }: MeasurementGameProps) {
             {s.label}
           </button>
         ))}
+      </div>
+
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={() => speakText(verbalizeMeasurementProblem(problem))}
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-100 text-teal-700 font-bold text-sm hover:bg-teal-200"
+        >
+          🔊 Nghe lại
+        </button>
       </div>
 
       <div className="bg-white rounded-3xl p-8 shadow-xl border-4 border-teal-200 min-h-[420px] flex flex-col items-center justify-center">
