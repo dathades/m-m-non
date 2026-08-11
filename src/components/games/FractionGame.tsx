@@ -41,7 +41,10 @@ export default function FractionGame({ onExit }: FractionGameProps) {
   const lockedRef = useRef(locked);
   lockedRef.current = locked;
 
+  const advanceRef = useRef<number | null>(null);
+
   const startProblem = (sk: FractionSkill | 'mix') => {
+    if (advanceRef.current !== null) { clearTimeout(advanceRef.current); advanceRef.current = null; }
     setProblem(generateFractionProblem(sk));
     setNum(''); setDen(''); setVal(''); setActive('num');
     setMsg(null); setTimeLeft(QTIME); setLocked(false); setCmpChoice('');
@@ -65,8 +68,8 @@ export default function FractionGame({ onExit }: FractionGameProps) {
       setTotal((n) => n + 1);
       setMsg({ text: 'Hết giờ! ⏰ (tính là sai)', ok: false });
       playSound('wrong');
-      const id = window.setTimeout(() => startProblem(skill), 1200);
-      return () => clearTimeout(id);
+      advanceRef.current = window.setTimeout(() => startProblem(skill), 1200);
+      return () => { if (advanceRef.current !== null) { clearTimeout(advanceRef.current); advanceRef.current = null; } };
     }
   }, [timeLeft, skill]);
 
@@ -77,7 +80,7 @@ export default function FractionGame({ onExit }: FractionGameProps) {
     setMsg({ text: 'Đúng rồi! 🎉', ok: true });
     playSound('correct');
     confetti({ particleCount: 90, spread: 60, origin: { y: 0.7 } });
-    window.setTimeout(() => startProblem(skill), 850);
+    advanceRef.current = window.setTimeout(() => startProblem(skill), 850);
   };
 
   const wrongTry = () => {
