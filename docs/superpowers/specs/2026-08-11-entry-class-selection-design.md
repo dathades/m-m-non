@@ -5,11 +5,11 @@ Ngày: 2026-08-11
 ## Mục tiêu
 
 Khi mới vào web, gộp **nhập tên** và **chọn lớp** vào cùng một màn hình. Hai lớp:
-**Mầm non** và **Lớp 4** (lớp 4 tuổi). Lưu lớp đã chọn để dùng về sau.
+**Mầm non** và **Lớp 4** (lớp 4). Lưu lớp đã chọn để dùng về sau.
 
 Phạm vi lần này **chỉ là màn đầu vào + lưu lớp + đổi lớp**. Chọn lớp **chưa có
 tác dụng** gì tới nội dung game — cả hai lớp vào cùng `StartScreen` hiện tại.
-Nội dung/bài học riêng cho lớp 4 tuổi là một buổi thiết kế **riêng** sau này
+Nội dung/bài học riêng cho lớp 4 là một buổi thiết kế **riêng** sau này
 (sẽ thêm bộ lọc game theo lớp lúc đó — không làm bây giờ, YAGNI).
 
 ## Quyết định đã chốt
