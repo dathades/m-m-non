@@ -3,9 +3,9 @@ import confetti from 'canvas-confetti';
 import GameHUD from '../GameHUD.tsx';
 import NumberPad from '../NumberPad.tsx';
 import Fraction from '../Fraction.tsx';
-import { playSound } from '../../lib/audio.ts';
+import { playSound, speakText, SAY } from '../../lib/audio.ts';
 import {
-  generateFractionProblem, checkFractionAnswer,
+  generateFractionProblem, checkFractionAnswer, verbalizeFractionProblem,
   type FractionProblem, type FractionSkill,
 } from '../../lib/fractionProblems.ts';
 
@@ -68,10 +68,14 @@ export default function FractionGame({ onExit }: FractionGameProps) {
       setTotal((n) => n + 1);
       setMsg({ text: 'Hết giờ! ⏰ (tính là sai)', ok: false });
       playSound('wrong');
-      advanceRef.current = window.setTimeout(() => startProblem(skill), 1200);
+      speakText(SAY.timeout);
+      advanceRef.current = window.setTimeout(() => startProblem(skill), 1500);
       return () => { if (advanceRef.current !== null) { clearTimeout(advanceRef.current); advanceRef.current = null; } };
     }
   }, [timeLeft, skill]);
+
+  // đọc câu hỏi mỗi khi hiện câu mới (gồm câu đầu tiên)
+  useEffect(() => { speakText(verbalizeFractionProblem(problem)); }, [problem]);
 
   const finishCorrect = () => {
     setLocked(true);
@@ -79,13 +83,15 @@ export default function FractionGame({ onExit }: FractionGameProps) {
     setTotal((n) => n + 1);
     setMsg({ text: 'Đúng rồi! 🎉', ok: true });
     playSound('correct');
+    speakText(SAY.correct);
     confetti({ particleCount: 90, spread: 60, origin: { y: 0.7 } });
-    advanceRef.current = window.setTimeout(() => startProblem(skill), 850);
+    advanceRef.current = window.setTimeout(() => startProblem(skill), 1800);
   };
 
   const wrongTry = () => {
     setMsg({ text: 'Chưa đúng, thử lại nhé', ok: false });
     playSound('wrong');
+    speakText(SAY.retry);
     setShake(true);
     window.setTimeout(() => setShake(false), 400);
   };
@@ -145,6 +151,15 @@ export default function FractionGame({ onExit }: FractionGameProps) {
             {s.label}
           </button>
         ))}
+      </div>
+
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={() => speakText(verbalizeFractionProblem(problem))}
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm hover:bg-indigo-200"
+        >
+          🔊 Nghe lại
+        </button>
       </div>
 
       <div className="bg-white rounded-3xl p-8 shadow-xl border-4 border-indigo-200 min-h-[420px] flex flex-col items-center justify-center">
