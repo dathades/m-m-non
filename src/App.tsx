@@ -35,6 +35,7 @@ import LetterRecognitionGame from './components/games/LetterRecognitionGame.tsx'
 import FirstLetterGame from './components/games/FirstLetterGame.tsx';
 import SpellingGame from './components/games/SpellingGame.tsx';
 import FractionGame from './components/games/FractionGame.tsx';
+import ExitConfirm from './components/ExitConfirm.tsx';
 
 const NAME_STORAGE_KEY = 'childName';
 
@@ -87,6 +88,7 @@ export default function App() {
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const [question, setQuestion] = useState<Question | null>(null);
   const [spellingRound, setSpellingRound] = useState<SpellingRound | null>(null);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [currentLetter, setCurrentLetter] = useState('A');
   const [showLetterPicker, setShowLetterPicker] = useState(false);
   const [settings, setSettings] = useState<GameSettings>({
@@ -195,6 +197,28 @@ export default function App() {
     }
     return () => clearInterval(timer);
   }, [gameState, timeLeft, feedback, mode]);
+
+  useEffect(() => {
+    if (gameState !== 'playing') return;
+    window.history.pushState({ game: true }, '');
+    const onPop = () => setShowExitConfirm(true);
+    const onBeforeUnload = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('popstate', onPop);
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [gameState]);
+
+  const stayInGame = () => {
+    setShowExitConfirm(false);
+    window.history.pushState({ game: true }, '');
+  };
+  const leaveGame = () => {
+    setShowExitConfirm(false);
+    resetToHome();
+  };
 
   const handleAnswer = (selected: string) => {
     if (feedback === 'correct') return;
@@ -392,6 +416,7 @@ export default function App() {
         <span>Học mà chơi, chơi mà học</span>
         <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" />
       </footer>
+      <ExitConfirm open={showExitConfirm} onStay={stayInGame} onLeave={leaveGame} />
     </div>
   );
 }
