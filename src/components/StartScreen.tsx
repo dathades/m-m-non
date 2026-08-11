@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import {
   BookOpen,
   CheckCircle2,
+  Divide,
   Gamepad2,
   GraduationCap,
   Hash,
@@ -13,7 +14,7 @@ import {
   Type,
   Volume2
 } from 'lucide-react';
-import type { GameMode, GameSettings, MathOperator } from '../types.ts';
+import type { ClassLevel, GameMode, GameSettings, MathOperator } from '../types.ts';
 
 interface StartScreenProps {
   name: string;
@@ -22,9 +23,10 @@ interface StartScreenProps {
   onStart: (mode: GameMode) => void;
   onChangeName: () => void;
   onChangeClass: () => void;
+  level: ClassLevel;
 }
 
-export default function StartScreen({ name, settings, onSettingsChange, onStart, onChangeName, onChangeClass }: StartScreenProps) {
+export default function StartScreen({ name, settings, onSettingsChange, onStart, onChangeName, onChangeClass, level }: StartScreenProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -50,6 +52,21 @@ export default function StartScreen({ name, settings, onSettingsChange, onStart,
         </button>
       </div>
 
+      {level === 'lop_4' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <button
+            onClick={() => onStart('fractions')}
+            className="group flex flex-col items-center p-6 bg-violet-100 hover:bg-violet-200 rounded-2xl transition-all border-b-8 border-violet-300 active:border-b-0 active:translate-y-2"
+          >
+            <div className="bg-violet-400 p-4 rounded-full text-white mb-4 group-hover:scale-110 transition-transform">
+              <Divide size={48} />
+            </div>
+            <span className="text-2xl font-bold text-violet-700">Phân Số</span>
+            <span className="text-sm text-violet-600 mt-2">Toán lớp 4</span>
+          </button>
+        </div>
+      )}
+      {level !== 'lop_4' && (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Math Card with Settings */}
         <div className="flex flex-col bg-orange-50 rounded-2xl border-4 border-orange-200 p-4 shadow-sm">
@@ -265,6 +282,7 @@ export default function StartScreen({ name, settings, onSettingsChange, onStart,
           <span className="text-sm text-teal-600 mt-2">Chọn chữ cái đầu của tiếng</span>
         </button>
       </div>
+      )}
     </motion.div>
   );
 }

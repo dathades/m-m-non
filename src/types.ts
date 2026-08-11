@@ -8,7 +8,8 @@ export type GameMode =
   | 'missing_number'
   | 'letter_recognition'
   | 'first_letter'
-  | 'spelling';
+  | 'spelling'
+  | 'fractions';
 
 export type MathOperator = '+' | '-';
 

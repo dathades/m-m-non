@@ -34,6 +34,7 @@ import MissingNumberGame from './components/games/MissingNumberGame.tsx';
 import LetterRecognitionGame from './components/games/LetterRecognitionGame.tsx';
 import FirstLetterGame from './components/games/FirstLetterGame.tsx';
 import SpellingGame from './components/games/SpellingGame.tsx';
+import FractionGame from './components/games/FractionGame.tsx';
 
 const NAME_STORAGE_KEY = 'childName';
 
@@ -165,6 +166,8 @@ export default function App() {
       const round = generateSpellingRound();
       setSpellingRound(round);
       speakText(round.syllable);
+    } else if (selectedMode === 'fractions') {
+      // FractionGame tự quản đề/đồng hồ/điểm — không sinh Question ở đây
     } else {
       const firstQuestion = generateQuestionForMode(selectedMode);
       if (firstQuestion) {
@@ -175,18 +178,19 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (gameState === 'playing' && !question && mode !== 'letters' && mode !== 'spelling') {
+    if (gameState === 'playing' && !question && mode !== 'letters' && mode !== 'spelling' && mode !== 'fractions') {
       nextQuestion();
     }
   }, [gameState, question, mode, nextQuestion]);
 
   useEffect(() => {
     let timer: number;
-    if (gameState === 'playing' && timeLeft > 0 && !feedback && mode !== 'letters') {
+    if (gameState === 'playing' && timeLeft > 0 && !feedback && mode !== 'letters' && mode !== 'fractions') {
       timer = window.setInterval(() => {
+        if (document.hidden) return;
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-    } else if (timeLeft === 0 && gameState === 'playing' && mode !== 'letters') {
+    } else if (timeLeft === 0 && gameState === 'playing' && mode !== 'letters' && mode !== 'fractions') {
       setGameState('end');
     }
     return () => clearInterval(timer);
@@ -364,9 +368,12 @@ export default function App() {
                 onStart={startGame}
                 onChangeName={() => setEditingSetup(true)}
                 onChangeClass={() => setEditingSetup(true)}
+                level={childClass || 'mam_non'}
               />
             )}
-            {gameState === 'playing' && renderPlaying()}
+            {gameState === 'playing' && (mode === 'fractions'
+              ? <FractionGame onExit={resetToHome} />
+              : renderPlaying())}
             {gameState === 'end' && (
               <EndScreen
                 name={childName}
