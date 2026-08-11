@@ -26,3 +26,5 @@ export interface GameSettings {
   comparisonRange: number;
   missingNumberRange: number;
 }
+
+export type ClassLevel = 'mam_non' | 'lop_4';
