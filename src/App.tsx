@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import confetti from 'canvas-confetti';
-import type { GameMode, GameSettings, Question } from './types.ts';
+import type { ClassLevel, GameMode, GameSettings, Question } from './types.ts';
 import { playSound, speakText } from './lib/audio.ts';
 import {
   generateComparison,
@@ -19,7 +19,7 @@ import {
 } from './lib/questions.ts';
 import { generateFirstLetter } from './lib/syllables.ts';
 import { generateSpellingRound, type SpellingRound } from './lib/spelling.ts';
-import NameEntryScreen from './components/NameEntryScreen.tsx';
+import EntryScreen from './components/EntryScreen.tsx';
 import StartScreen from './components/StartScreen.tsx';
 import EndScreen from './components/EndScreen.tsx';
 import GameHUD from './components/GameHUD.tsx';
@@ -53,9 +53,29 @@ const saveChildName = (name: string) => {
   }
 };
 
+const CLASS_STORAGE_KEY = 'childClass';
+
+const loadChildClass = (): ClassLevel | '' => {
+  try {
+    const v = localStorage.getItem(CLASS_STORAGE_KEY);
+    return v === 'mam_non' || v === 'lop_4' ? v : '';
+  } catch {
+    return '';
+  }
+};
+
+const saveChildClass = (level: ClassLevel) => {
+  try {
+    localStorage.setItem(CLASS_STORAGE_KEY, level);
+  } catch {
+    // localStorage bị chặn (private mode) — lớp chỉ sống trong phiên
+  }
+};
+
 export default function App() {
   const [childName, setChildName] = useState(loadChildName);
-  const [editingName, setEditingName] = useState(false);
+  const [childClass, setChildClass] = useState<ClassLevel | ''>(loadChildClass);
+  const [editingSetup, setEditingSetup] = useState(false);
 
   const [mode, setMode] = useState<GameMode>('math');
   const [gameState, setGameState] = useState<'start' | 'playing' | 'end'>('start');
@@ -76,10 +96,12 @@ export default function App() {
     missingNumberRange: 20
   });
 
-  const handleNameSubmit = (name: string) => {
+  const handleSetupSubmit = (name: string, level: ClassLevel) => {
     saveChildName(name);
+    saveChildClass(level);
     setChildName(name);
-    setEditingName(false);
+    setChildClass(level);
+    setEditingSetup(false);
     speakText(`Xin chào ${name}! Cùng học nào!`);
   };
 
@@ -319,7 +341,7 @@ export default function App() {
     </div>
   );
 
-  const needsName = !childName || editingName;
+  const needsSetup = !childName || !childClass || editingSetup;
 
   return (
     <div className="min-h-screen bg-[#f0f9ff] flex flex-col items-center justify-center p-4 font-sans selection:bg-pink-200" id="app-container">
@@ -330,8 +352,8 @@ export default function App() {
       </div>
 
       <main className="relative z-10 w-full flex flex-col items-center">
-        {needsName ? (
-          <NameEntryScreen initialName={childName} onSubmit={handleNameSubmit} />
+        {needsSetup ? (
+          <EntryScreen initialName={childName} initialClass={childClass} onSubmit={handleSetupSubmit} />
         ) : (
           <>
             {gameState === 'start' && (
@@ -340,7 +362,8 @@ export default function App() {
                 settings={settings}
                 onSettingsChange={(patch) => setSettings(prev => ({ ...prev, ...patch }))}
                 onStart={startGame}
-                onChangeName={() => setEditingName(true)}
+                onChangeName={() => setEditingSetup(true)}
+                onChangeClass={() => setEditingSetup(true)}
               />
             )}
             {gameState === 'playing' && renderPlaying()}

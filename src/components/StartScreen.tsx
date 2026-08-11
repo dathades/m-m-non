@@ -3,6 +3,7 @@ import {
   BookOpen,
   CheckCircle2,
   Gamepad2,
+  GraduationCap,
   Hash,
   Pencil,
   RotateCcw,
@@ -20,9 +21,10 @@ interface StartScreenProps {
   onSettingsChange: (patch: Partial<GameSettings>) => void;
   onStart: (mode: GameMode) => void;
   onChangeName: () => void;
+  onChangeClass: () => void;
 }
 
-export default function StartScreen({ name, settings, onSettingsChange, onStart, onChangeName }: StartScreenProps) {
+export default function StartScreen({ name, settings, onSettingsChange, onStart, onChangeName, onChangeClass }: StartScreenProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -31,13 +33,22 @@ export default function StartScreen({ name, settings, onSettingsChange, onStart,
     >
       <h1 className="text-5xl font-bold text-pink-500 mb-2 drop-shadow-sm">{name} Vui Học Tập! 🌟</h1>
       <p className="text-lg text-blue-600 font-medium italic mb-2">"Học mà chơi, chơi mà học"</p>
-      <button
-        onClick={onChangeName}
-        className="inline-flex items-center gap-1 text-sm font-bold text-gray-400 hover:text-pink-500 transition-colors mb-4"
-      >
-        <Pencil size={14} />
-        Đổi tên
-      </button>
+      <div className="flex items-center justify-center gap-4 mb-4">
+        <button
+          onClick={onChangeName}
+          className="inline-flex items-center gap-1 text-sm font-bold text-gray-400 hover:text-pink-500 transition-colors"
+        >
+          <Pencil size={14} />
+          Đổi tên
+        </button>
+        <button
+          onClick={onChangeClass}
+          className="inline-flex items-center gap-1 text-sm font-bold text-gray-400 hover:text-pink-500 transition-colors"
+        >
+          <GraduationCap size={14} />
+          Đổi lớp
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Math Card with Settings */}
